@@ -27,6 +27,10 @@ module BestInPlace
         options[:data]['bip-collection'] = html_escape(collection)
       end
 
+      if type == :date && value.respond_to?(:to_fs)
+        value = value.to_fs
+      end
+
       options[:class] = ['best_in_place'] + Array(opts[:class] || opts[:classes])
       options[:id] = opts[:id] || BestInPlace::Utils.build_best_in_place_id(real_object, field)
 
@@ -116,7 +120,9 @@ module BestInPlace
             BestInPlace::ViewHelpers.send(opts[:display_with], field_value)
           end
         end
-
+      elsif opts[:as] == :date
+        value = object.send(field)
+        value.respond_to?(:to_fs) ? value.to_fs : value.to_s
       else
         object.send(field).to_s
       end
